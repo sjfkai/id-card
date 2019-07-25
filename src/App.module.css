@@ -1,0 +1,101 @@
+.h5 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 20px;
+}
+
+.h5Cards {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.h5Card {
+  margin-top: 10px;
+  width: 90%;
+}
+
+.h5AddCard {
+  margin-top: 10px;
+  width: 90%;
+}
+
+.h5Button {
+  margin-top: 10px;
+  text-align: center;
+  width: 90%;
+  height: 40px;
+  line-height: 40px;
+  border-radius: 10px;
+  border: #dfe4ea 1px solid;
+  font-size: 18px;
+}
+
+.h5ButtonPrimary {
+  background: #70a1ff;
+  color: #ffffff;
+  border-color: #1e90ff;
+}
+
+.h5ButtonDisable {
+  background: #f5f5f5;
+  border-color: #d9d9d9;
+  color: rgba(0,0,0,0.25);
+}
+
+
+.pc {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.pcHeader {
+  text-align: right;
+  padding: 10px;
+  background: #dfe4ea;
+}
+
+.pcButton {
+  display: inline-block;
+  text-align: center;
+  padding: 0 20px;
+  height: 40px;
+  line-height: 40px;
+  border-radius: 10px;
+  border: #dfe4ea 1px solid;
+  font-size: 16px;
+}
+
+.pcButtonPrimary {
+  background: #70a1ff;
+  color: #ffffff;
+  border-color: #1e90ff;
+}
+
+.pcButtonDisable {
+  background: #f5f5f5;
+  border-color: #d9d9d9;
+  color: rgba(0,0,0,0.25);
+}
+
+.pcCards {
+  height: 100%;
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.pcCard {
+  width: 350px;
+  padding: 25px;
+}
+
+.pcAddCard {
+  box-sizing: border-box;
+  padding: 35px;
+  width: 400px;
+  height: 470px;
+}

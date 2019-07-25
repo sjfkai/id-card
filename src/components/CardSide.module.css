@@ -1,0 +1,15 @@
+.cardSide {
+  margin-top: 10px;
+  width: 100%;
+  text-align: center;
+}
+
+.input {
+  display: none;
+}
+
+.cardImg {
+  border-radius: 10px;
+  width: 100%;
+  cursor: pointer;
+}
