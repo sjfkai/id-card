@@ -116,7 +116,6 @@ class App extends React.Component {
       results,
     })
     confirm(info).then(data => {
-      console.log(data)
       // 确认成功
       const results = produce(this.state.results, draftState => {
         draftState[index].isConfirming = false

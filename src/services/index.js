@@ -26,6 +26,12 @@ export async function recognize(frontFiles, backFiles) {
       method: 'POST',
       body: formData
     })
+    if (!response.ok) {
+      return {
+        isError: true,
+        msg: `code: ${response.status}`,
+      }
+    }
     const data = await response.json()
     data.isError = data.code !== 0
     if (data.data) {
@@ -67,6 +73,9 @@ export async function confirm(info) {
     method: 'POST',
     body: formData,
   })
+  if (!response.ok) {
+    throw new Error(`code: ${response.status}`)
+  }
   const data = await response.json()
   if (!data || data.code !== 0) {
     throw new Error(data.msg || '请求错误')
