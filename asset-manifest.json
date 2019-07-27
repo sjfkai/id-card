@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "./static/css/main.19e9f34a.chunk.css",
-    "main.js": "./static/js/main.0f1af57e.chunk.js",
-    "main.js.map": "./static/js/main.0f1af57e.chunk.js.map",
+    "main.css": "./static/css/main.b48c3dbf.chunk.css",
+    "main.js": "./static/js/main.fe41f548.chunk.js",
+    "main.js.map": "./static/js/main.fe41f548.chunk.js.map",
     "runtime~main.js": "./static/js/runtime~main.d653cc00.js",
     "runtime~main.js.map": "./static/js/runtime~main.d653cc00.js.map",
-    "static/js/2.410f67d2.chunk.js": "./static/js/2.410f67d2.chunk.js",
-    "static/js/2.410f67d2.chunk.js.map": "./static/js/2.410f67d2.chunk.js.map",
+    "static/js/2.5eddd577.chunk.js": "./static/js/2.5eddd577.chunk.js",
+    "static/js/2.5eddd577.chunk.js.map": "./static/js/2.5eddd577.chunk.js.map",
     "index.html": "./index.html",
-    "precache-manifest.899a9007880c45bd21f92310060534b2.js": "./precache-manifest.899a9007880c45bd21f92310060534b2.js",
+    "precache-manifest.4f291e8578d4fdb499bfabcf7d6b496d.js": "./precache-manifest.4f291e8578d4fdb499bfabcf7d6b496d.js",
     "service-worker.js": "./service-worker.js",
-    "static/css/main.19e9f34a.chunk.css.map": "./static/css/main.19e9f34a.chunk.css.map",
+    "static/css/main.b48c3dbf.chunk.css.map": "./static/css/main.b48c3dbf.chunk.css.map",
     "static/media/Card.module.css": "./static/media/close.0a390857.svg",
     "static/media/AddCard.module.css": "./static/media/plus-circle.9f0e344b.svg"
   }
