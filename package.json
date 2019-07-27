@@ -2,6 +2,7 @@
   "name": "id-card",
   "version": "0.1.0",
   "homepage": ".",
+  "proxy": "http://148.70.216.226:9999/",
   "private": true,
   "dependencies": {
     "classnames": "^2.2.6",

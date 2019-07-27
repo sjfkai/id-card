@@ -13,6 +13,7 @@ export default class CardSide extends React.Component {
   }
 
   onInputChange = e => {
+    console.log(e.target.files)
     const file = e.target.files[0]
     if (!file) {
       return

@@ -4,6 +4,8 @@ import classNames from 'classnames'
 
 import Card from './components/Card'
 import AddCard from './components/AddCard'
+import Confirm from './components/Confirm'
+import { recognize, confirm } from './services'
 import styles from './App.module.css'
 
 class App extends React.Component {
@@ -11,6 +13,9 @@ class App extends React.Component {
     super(props)
     this.state = {
       cards: [{}],
+      results: [],
+      error: '',
+      isRecognizing: false,
       width: window.innerWidth,
     }
   }
@@ -54,6 +59,84 @@ class App extends React.Component {
     })
   }
 
+  onRecognize = () => {
+    if (!this.isAllSideSelected()) {
+      return
+    }
+    const { cards } = this.state
+    const frontFiles = cards.map(card => card.front.file)
+    const backFiles = cards.map(card => card.back.file)
+    this.setState({
+      isRecognizing: true,
+      error: '',
+    })
+    recognize(frontFiles, backFiles).then(data => {
+      // 识别失败
+      if(data.isError) {
+        this.setState({
+          isRecognizing: false,
+          error: `识别失败… 错误：${data.msg}`,
+        })
+        return
+      }
+      // 识别成功
+      this.setState({
+        isRecognizing: false,
+        results: data.data
+      })
+    })
+  }
+
+  onBack = () => {
+    this.setState({
+      cards: [{}],
+      results: [],
+    })
+  }
+
+  onInfoChange = index => data => {
+    const results = produce(this.state.results, draftState => {
+      draftState[index] = data
+    })
+    this.setState({
+      results,
+    })
+  }
+
+  onConfirm = index => () => {
+    const info = this.state.results[index]
+    if (info.isConfirming || info.isConfirmed) {
+      return
+    }
+    const results = produce(this.state.results, draftState => {
+      draftState[index].isConfirming = true
+    })
+    this.setState({
+      error: '',
+      results,
+    })
+    confirm(info).then(data => {
+      console.log(data)
+      // 确认成功
+      const results = produce(this.state.results, draftState => {
+        draftState[index].isConfirming = false
+        draftState[index].isConfirmed = true
+      })
+      this.setState({
+        results,
+      })
+    }).catch(e => {
+      // 确认失败
+      const results = produce(this.state.results, draftState => {
+        draftState[index].isConfirming = false
+      })
+      this.setState({
+        error: e.message,
+        results,
+      })
+    })
+  }
+
   isAllSideSelected = () => {
     return this.state.cards.reduce(
       (isPrevSelected, card) => isPrevSelected && card.front && card.back, 
@@ -61,75 +144,146 @@ class App extends React.Component {
     )
   }
 
+  isShowConfirm = () => {
+    return this.state.results.length > 0
+  }
+
   renderH5() {
-    const { cards } = this.state
+    const { cards, results, error, isRecognizing } = this.state
     const isAllSideSelected = this.isAllSideSelected()
+    const isShowConfirm = this.isShowConfirm()
     return (
       <div className={styles.h5}>
+        {
+          error && <div className={styles.h5Error}>{error}</div>
+        }
         <div className={styles.h5Cards}>
           {
-            cards.map((card, index) => (
-              <div key={index} className={styles.h5Card}>
-                <Card 
-                  card={card}
-                  onCardChange={this.onCardChange(index)}
-                  canDelete={index !== 0}
-                  onDelete={this.onDeleteCard(index)}
-                />
-              </div>
-            ))
+            isShowConfirm ? (
+              results.map((result, index) => (
+                <div key={index} className={styles.h5Card}>
+                  <Confirm 
+                    info={result}
+                    onInfoChange={this.onInfoChange(index)}
+                    onConfirm={this.onConfirm(index)}
+                  />
+                </div>
+              ))
+            ) : (
+              cards.map((card, index) => (
+                <div key={index} className={styles.h5Card}>
+                  <Card 
+                    card={card}
+                    onCardChange={this.onCardChange(index)}
+                    canDelete={index !== 0}
+                    onDelete={this.onDeleteCard(index)}
+                  />
+                </div>
+              ))
+            )
           }
         </div>
         {
-          isAllSideSelected &&
+          !isShowConfirm && isAllSideSelected &&
           <div className={styles.h5AddCard}>
             <AddCard onClick={this.onAddCard}/>
           </div>
         }
-        <div
-          className={classNames({
-            [styles.h5Button]: true,
-            [styles.h5ButtonPrimary]: true,
-            [styles.h5ButtonDisable]: !isAllSideSelected,
-          })}
-        >
-          上 传
-        </div>
+        {
+          // 识别按钮
+          !isShowConfirm &&
+          <div
+            className={classNames({
+              [styles.h5Button]: true,
+              [styles.h5ButtonPrimary]: true,
+              [styles.h5ButtonDisable]: !isAllSideSelected || isRecognizing,
+            })}
+            onClick={this.onRecognize}
+          >
+            {isRecognizing ? '识别中' : '识 别'}
+          </div>
+        }
+        {
+          // 返回按钮
+          isShowConfirm &&
+          <div
+            className={classNames({
+              [styles.h5Button]: true,
+            })}
+            onClick={this.onBack}
+          >
+            {'返 回'}
+          </div>
+        }
+        
       </div>
     );
   }
 
   renderPc() {
-    const { cards } = this.state
+    const { cards, results, error, isRecognizing } = this.state
     const isAllSideSelected = this.isAllSideSelected()
+    const isShowConfirm = this.isShowConfirm()
     return (
       <div className={styles.pc}>
+        {
+          error && <div className={styles.pcError}>{error}</div>
+        }
         <div className={styles.pcHeader}>
+        {
+          // 识别按钮
+          !isShowConfirm &&
           <div
             className={classNames({
               [styles.pcButton]: true,
               [styles.pcButtonPrimary]: true,
-              [styles.pcButtonDisable]: !isAllSideSelected,
+              [styles.pcButtonDisable]: !isAllSideSelected || isRecognizing,
             })}
+            onClick={this.onRecognize}
           >
-            上 传
+            {isRecognizing ? '识别中' : '识 别'}
           </div>
+        }
+        {
+          // 返回按钮
+          isShowConfirm &&
+          <div
+            className={classNames({
+              [styles.pcButton]: true,
+            })}
+            onClick={this.onBack}
+          >
+            {'返 回'}
+          </div>
+        }
         </div>
         <div className={styles.pcCards}>
           {
-            cards.map((card, index) => (
-              <div key={index} className={styles.pcCard}>
-                <Card 
-                  card={card}
-                  onCardChange={this.onCardChange(index)}
-                  canDelete={index !== 0}
-                  onDelete={this.onDeleteCard(index)}
-                />
-              </div>
-            ))
+            isShowConfirm ? (
+              results.map((result, index) => (
+                <div key={index} className={styles.pcCard}>
+                  <Confirm 
+                    info={result}
+                    onInfoChange={this.onInfoChange(index)}
+                    onConfirm={this.onConfirm(index)}
+                  />
+                </div>
+              ))
+            ) : (
+              cards.map((card, index) => (
+                <div key={index} className={styles.pcCard}>
+                  <Card 
+                    card={card}
+                    onCardChange={this.onCardChange(index)}
+                    canDelete={index !== 0}
+                    onDelete={this.onDeleteCard(index)}
+                  />
+                </div>
+              ))
+            )
           }
           {
-            isAllSideSelected &&
+            !isShowConfirm && isAllSideSelected &&
             <div className={styles.pcAddCard}>
               <AddCard onClick={this.onAddCard}/>
             </div>
