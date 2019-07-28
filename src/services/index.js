@@ -22,7 +22,7 @@ export async function recognize(frontFiles, backFiles) {
       formData.append('idCardFront', frontFiles[i])
       formData.append('idCardBack', backFiles[i])
     }
-    const response = await fetch('/oa/personal/savePersonByDiscern', {
+    const response = await fetch('http://148.70.216.226:9999/oa/personal/savePersonByDiscern', {
       method: 'POST',
       body: formData
     })
@@ -69,7 +69,7 @@ export async function confirm(info) {
   confirmKeys.forEach(k => {
     formData.append(k, info[k])
   })
-  const response = await fetch('/oa/personal/add', {
+  const response = await fetch('http://148.70.216.226:9999/oa/personal/add', {
     method: 'POST',
     body: formData,
   })
