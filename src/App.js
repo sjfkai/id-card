@@ -5,7 +5,7 @@ import classNames from 'classnames'
 import Card from './components/Card'
 import AddCard from './components/AddCard'
 import Confirm from './components/Confirm'
-import { recognize, confirm } from './services'
+import { upload, recognize, confirm } from './services'
 import styles from './App.module.css'
 
 class App extends React.Component {
@@ -14,9 +14,12 @@ class App extends React.Component {
     this.state = {
       cards: [{}],
       results: [],
+      // folder:'idCard',
       error: '',
       isRecognizing: false,
+      recognizeStatus: '',
       width: window.innerWidth,
+      timer: 0,
     }
   }
 
@@ -68,22 +71,59 @@ class App extends React.Component {
     const backFiles = cards.map(card => card.back.file)
     this.setState({
       isRecognizing: true,
+      recognizeStatus: '上传中',
       error: '',
     })
-    recognize(frontFiles, backFiles).then(data => {
-      // 识别失败
+    // 开始上传计时
+    let timer = setInterval(() => {
+      this.setState(prevState => ({
+        timer: prevState.timer + 0.1,
+      }))
+    }, 100)
+    upload(frontFiles, backFiles).then(data => {
+      clearInterval(timer) // 清除计时
+      // 上传失败
       if(data.isError) {
         this.setState({
           isRecognizing: false,
-          error: `识别失败… 错误：${data.msg}`,
+          recognizeStatus: '',
+          error: `上传失败… 错误：${data.msg}`,
+          timer: 0,
         })
-        return
+        return Promise.reject('上传失败')
+      }
+      // 识别
+      this.setState({
+        recognizeStatus: '识别中',
+        timer: 0
+      })
+      // 开始识别计时
+      timer = setInterval(() => {
+        this.setState(prevState => ({
+          timer: prevState.timer + 0.1,
+        }))
+      }, 100)
+      return recognize(data.filePath)
+    }).then(resultData => {
+      clearInterval(timer) // 清除计时
+      if(resultData.isError) {
+        this.setState({
+          isRecognizing: false,
+          recognizeStatus: '',
+          error: `上传失败… 错误：${resultData.msg}`,
+          timer: 0,
+        })
+        return Promise.reject('识别失败')
       }
       // 识别成功
       this.setState({
         isRecognizing: false,
-        results: data.data
+        recognizeStatus: '',
+        results: resultData.data,
+        timer: 0,
       })
+    }).catch(e => {
+      console.error(e)
     })
   }
 
@@ -136,6 +176,12 @@ class App extends React.Component {
     })
   }
 
+  // onFolderChange = e => {
+  //   this.setState({
+  //     folder: e.target.value,
+  //   })
+  // }
+
   isAllSideSelected = () => {
     return this.state.cards.reduce(
       (isPrevSelected, card) => isPrevSelected && card.front && card.back, 
@@ -145,6 +191,14 @@ class App extends React.Component {
 
   isShowConfirm = () => {
     return this.state.results.length > 0
+  }
+
+  getRecognizeButtonText = () => {
+    const { isRecognizing, recognizeStatus, timer } = this.state
+    if (!isRecognizing) {
+      return '上传识别'
+    }
+    return `${recognizeStatus}... ${timer.toFixed(1)}s`
   }
 
   renderH5() {
@@ -188,6 +242,18 @@ class App extends React.Component {
             <AddCard onClick={this.onAddCard}/>
           </div>
         }
+        {/* {
+          !isShowConfirm &&
+          <div className={styles.h5Folder}>
+            <div className={styles.h5FolderLabel}>文件夹：</div>
+            <input 
+              className={styles.h5FolderInput} 
+              value={folder}
+              onChange={this.onFolderChange}
+            />
+          </div>
+          
+        } */}
         {
           // 识别按钮
           !isShowConfirm &&
@@ -199,7 +265,7 @@ class App extends React.Component {
             })}
             onClick={this.onRecognize}
           >
-            {isRecognizing ? '识别中' : '识 别'}
+            {this.getRecognizeButtonText()}
           </div>
         }
         {
@@ -229,6 +295,18 @@ class App extends React.Component {
           error && <div className={styles.pcError}>{error}</div>
         }
         <div className={styles.pcHeader}>
+        {/* {
+          !isShowConfirm &&
+          <div className={styles.pcFolder}>
+            <div className={styles.pcFolderLabel}>文件夹：</div>
+            <input 
+              className={styles.pcFolderInput} 
+              value={folder}
+              onChange={this.onFolderChange}
+            />
+          </div>
+          
+        } */}
         {
           // 识别按钮
           !isShowConfirm &&
@@ -240,7 +318,7 @@ class App extends React.Component {
             })}
             onClick={this.onRecognize}
           >
-            {isRecognizing ? '识别中' : '识 别'}
+            {this.getRecognizeButtonText()}
           </div>
         }
         {

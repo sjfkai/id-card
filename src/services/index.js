@@ -1,9 +1,6 @@
+import qs from 'qs'
 
-function removeTime(str) {
-  return str.replace('00:00:00', '').trim()
-}
-
-export async function recognize(frontFiles, backFiles) {
+export async function upload(frontFiles, backFiles, folder = 'idCard') {
   if (
     !frontFiles 
     || !backFiles
@@ -16,15 +13,56 @@ export async function recognize(frontFiles, backFiles) {
       msg: '文件数量不一致'
     }
   }
+
+  if (!folder) {
+    return {
+      isError: true,
+      msg: '文件夹不能为空'
+    }
+  }
+
   try {
     const formData = new FormData();
     for (let i = 0; i < frontFiles.length; i++) {
       formData.append('idCardFront', frontFiles[i])
       formData.append('idCardBack', backFiles[i])
     }
-    const response = await fetch('http://148.70.216.226:9999/oa/personal/savePersonByDiscern', {
+    formData.append('fileFolder', folder)
+    const response = await fetch('http://148.70.216.226:9999/upload/uploadIdCards', {
       method: 'POST',
       body: formData
+    })
+    if (!response.ok) {
+      return {
+        isError: true,
+        msg: `上传失败，code: ${response.status}`,
+      }
+    }
+    const data = await response.json()
+    data.isError = data.code !== 0
+    return data
+  } catch (error) {
+    console.error(error)
+    return {
+      isError: true,
+      msg: error.message,
+    }
+  }
+
+}
+
+export async function recognize(filePath) {
+  try {
+    const body = qs.stringify({
+      filePath: JSON.stringify(filePath),
+      fileFolder: '406ea476-aeaf-4223-b75c-a72a8d55bb07',
+    })
+    const response = await fetch('http://47.95.204.210:8088/cardDiscern/savePersonByDiscern', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body,
     })
     if (!response.ok) {
       return {
@@ -33,15 +71,7 @@ export async function recognize(frontFiles, backFiles) {
       }
     }
     const data = await response.json()
-    data.isError = data.code !== 0
-    if (data.data) {
-      data.data = data.data.map(card => ({
-        ...card,
-        birthday: removeTime(card.birthday),
-        expiryDate: removeTime(card.expiryDate),
-        issueDate: removeTime(card.issueDate),
-      }))
-    }
+    data.isError = data.status !== 0
     return data
   } catch (error) {
     console.error(error)
@@ -52,32 +82,36 @@ export async function recognize(frontFiles, backFiles) {
   }
 }
 
-const confirmKeys = [
-  'address',
-  'birthday',
-  'code',
-  'expiryDate',
-  'issue',
-  'issueDate',
-  'name',
-  'nation',
-  'sex',
-]
+// const confirmKeys = [
+//   'id',
+//   'address',
+//   'birthday',
+//   'code',
+//   'expiryDate',
+//   'issue',
+//   'issueDate',
+//   'name',
+//   'nation',
+//   'sex',
+// ]
 
 export async function confirm(info) {
-  const formData = new FormData();
-  confirmKeys.forEach(k => {
-    formData.append(k, info[k])
-  })
-  const response = await fetch('http://148.70.216.226:9999/oa/personal/add', {
+  console.log(info)
+  const response = await fetch('http://47.95.204.210:8088/cardDiscern/checkDiscern', {
     method: 'POST',
-    body: formData,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    body: qs.stringify({
+      ...info,
+      fileFolder: '406ea476-aeaf-4223-b75c-a72a8d55bb07',
+    }),
   })
   if (!response.ok) {
     throw new Error(`code: ${response.status}`)
   }
   const data = await response.json()
-  if (!data || data.code !== 0) {
+  if (!data || data.status !== 0) {
     throw new Error(data.msg || '请求错误')
   }
   return data

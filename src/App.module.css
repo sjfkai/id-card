@@ -58,6 +58,28 @@
   color: rgba(0,0,0,0.25);
 }
 
+.h5Folder {
+  padding: 10px;
+  width: 90%;
+  display: flex;
+  align-items: center;
+}
+
+.h5FolderLabel {
+  color: #2c3e50;
+  font-size: 14px;
+}
+
+.h5FolderInput {
+  flex: 1;
+  background: transparent;
+  color: #2c3e50;
+  border: 1px solid #ecf0f1;
+  border-radius: 3px;
+  padding: 5px 10px;
+  color: #2c3e50;
+}
+
 
 .pc {
   height: 100vh;
@@ -128,4 +150,27 @@
   padding: 35px;
   width: 400px;
   height: 470px;
+}
+
+.pcFolder {
+  padding: 10px;
+  width: 250;
+  display: inline-flex;
+  align-items: center;
+}
+
+.pcFolderLabel {
+  color: #2c3e50;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.pcFolderInput {
+  flex: 1;
+  background: transparent;
+  color: #2c3e50;
+  border: 1px solid #ecf0f1;
+  border-radius: 3px;
+  padding: 5px 10px;
+  color: #2c3e50;
 }
