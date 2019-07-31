@@ -1,6 +1,6 @@
 {
   "files": {
-    "main.css": "./static/css/main.13293863.chunk.css",
+    "main.css": "./static/css/main.532817b9.chunk.css",
     "main.js": "./static/js/main.b50db30b.chunk.js",
     "main.js.map": "./static/js/main.b50db30b.chunk.js.map",
     "runtime~main.js": "./static/js/runtime~main.d653cc00.js",
@@ -8,9 +8,9 @@
     "static/js/2.6290739d.chunk.js": "./static/js/2.6290739d.chunk.js",
     "static/js/2.6290739d.chunk.js.map": "./static/js/2.6290739d.chunk.js.map",
     "index.html": "./index.html",
-    "precache-manifest.c4ced415575f91f9f60d978f66083019.js": "./precache-manifest.c4ced415575f91f9f60d978f66083019.js",
+    "precache-manifest.387a4b75190001c86db07c2cd5ce65dd.js": "./precache-manifest.387a4b75190001c86db07c2cd5ce65dd.js",
     "service-worker.js": "./service-worker.js",
-    "static/css/main.13293863.chunk.css.map": "./static/css/main.13293863.chunk.css.map",
+    "static/css/main.532817b9.chunk.css.map": "./static/css/main.532817b9.chunk.css.map",
     "static/media/Card.module.css": "./static/media/close.0a390857.svg",
     "static/media/AddCard.module.css": "./static/media/plus-circle.9f0e344b.svg"
   }
